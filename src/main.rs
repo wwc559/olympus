@@ -38,7 +38,8 @@ const DENSITY_AT_10KM: [f64; 11] = [
 
 fn main() {
     let matches = cli().get_matches();
-    let mut distance = *matches.get_one::<f64>("distance").unwrap();
+    let initial_distance = *matches.get_one::<f64>("distance").unwrap();
+    let mut distance = initial_distance;
     let width = *matches.get_one::<f64>("width").unwrap();
     let mass = *matches.get_one::<f64>("mass").unwrap();
     let delta_t = *matches.get_one::<f64>("integration_time").unwrap();
@@ -46,7 +47,7 @@ fn main() {
     let mut t: f64 = 0.0;
     let table_limit = (DENSITY_AT_10KM.len() - 1) as f64 * 10000.0;
     println!("distance={}, width={}, mass={}", distance, width, mass);
-    while distance > 0.0 {
+    while distance - (velocity * delta_t) > 0.0 {
         let a_g = f_gravity(mass, M_EARTH, D_EARTH + distance) / mass;
         let a_d = if distance < table_limit {
             let index = distance as usize / 10000;
@@ -69,9 +70,19 @@ fn main() {
                 a_g, a_d,
             );
         }
-        distance -= (velocity) * delta_t;
+        distance -= velocity * delta_t;
         t += delta_t;
     }
+    println!(
+        "\nA {} kg anvil, dropped from {} km above the earth, will strike  after {:.2} days.",
+        mass,
+        initial_distance / 1000.0,
+        t as f64 / (60.0 * 60.0 * 24.0)
+    );
+    println!(
+        "Precicely, after {:.2} seconds it was {:.2} m high moving at {:.2} m/s",
+        t, distance, velocity
+    );
 }
 
 /// force of gravity: ((m^3/(kg s^2)) kg kg / m m) = kg m/s^2
