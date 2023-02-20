@@ -80,7 +80,7 @@ fn main() {
         t as f64 / (60.0 * 60.0 * 24.0)
     );
     println!(
-        "Precicely, after {:.2} seconds it was {:.2} m high moving at {:.2} m/s",
+        "Precicely, after {:.2} seconds it was {:.2} m above sea level, moving at {:.2} m/s",
         t, distance, velocity
     );
 }
